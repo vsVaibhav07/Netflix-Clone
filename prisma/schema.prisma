@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Movie {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moviename    String
+  description  String
+  category     String
+  genres       String[]
+  videourl     String
+  thumbnailurl String?
+  createdat    DateTime? @default(now()) @db.Timestamp(6)
+  updatedat    DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([moviename, category], map: "idx_movies_name_category")
+  @@map("movies")
+}
