@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-
 import CategoryRow from "@/components/movies/CategoryRow";
 
 interface CategoryPageProps {
@@ -9,12 +8,11 @@ interface CategoryPageProps {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;
 
-
   const categoryMap: Record<string, string> = {
-    "movies": "Movie",
+    movies: "Movie",
     "tv-shows": "TV-Serial",
-    "web-series":"Web-Series",
-    "my-list":""
+    "web-series": "Web-Series",
+    "my-list": "",
   };
 
   const category = categoryMap[slug];
@@ -27,11 +25,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     );
   }
 
-
-  const movies = await prisma.movie.findMany({
-    where: { category:category },
-    orderBy: { createdat: "desc" },
-  });
+  let movies = [];
+  try {
+    movies = await prisma.movie.findMany({
+      where: { category },
+      orderBy: { createdat: "desc" },
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    // safe fallback
+    movies = [];
+  }
 
   return (
     <div className="min-h-screen w-full pt-10 text-white p-6">
@@ -39,7 +43,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {slug.replace("-", " ").toUpperCase()}
       </h1>
 
-      <CategoryRow category={slug} movies={movies} />
+      {movies.length > 0 ? (
+        <CategoryRow category={slug} movies={movies} />
+      ) : (
+        <p>No movies found.</p>
+      )}
     </div>
   );
 }
