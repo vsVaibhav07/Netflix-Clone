@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Movie } from "@/generated/prisma";
 import CategoryRow from "@/components/movies/CategoryRow";
 
 interface CategoryPageProps {
@@ -25,16 +26,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     );
   }
 
-  let movies = [];
+  let movies: Movie[] = []; // ✅ explicitly typed
+
   try {
     movies = await prisma.movie.findMany({
       where: { category },
       orderBy: { createdat: "desc" },
     });
   } catch (error) {
-    console.error("Database connection failed:", error);
-    // safe fallback
-    movies = [];
+    console.error("Error fetching movies:", error);
   }
 
   return (
@@ -43,11 +43,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {slug.replace("-", " ").toUpperCase()}
       </h1>
 
-      {movies.length > 0 ? (
-        <CategoryRow category={slug} movies={movies} />
-      ) : (
-        <p>No movies found.</p>
-      )}
+      <CategoryRow category={slug} movies={movies} />
     </div>
   );
 }
