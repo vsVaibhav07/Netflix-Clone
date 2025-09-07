@@ -1,49 +1,49 @@
-import { prisma } from "@/lib/prisma";
-import type { Movie } from "@/generated/prisma";
-import CategoryRow from "@/components/movies/CategoryRow";
+// import { prisma } from "@/lib/prisma";
+// import type { Movie } from "@/generated/prisma";
+// import CategoryRow from "@/components/movies/CategoryRow";
 
-interface CategoryPageProps {
-  params: { slug: string };
-}
+// interface CategoryPageProps {
+//   params: { slug: string };
+// }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = params;
+// export default async function CategoryPage({ params }: CategoryPageProps) {
+//   const { slug } = params;
 
-  const categoryMap: Record<string, string> = {
-    movies: "Movie",
-    "tv-shows": "TV-Serial",
-    "web-series": "Web-Series",
-    "my-list": "",
-  };
+//   const categoryMap: Record<string, string> = {
+//     movies: "Movie",
+//     "tv-shows": "TV-Serial",
+//     "web-series": "Web-Series",
+//     "my-list": "",
+//   };
 
-  const category = categoryMap[slug];
+//   const category = categoryMap[slug];
 
-  if (!category) {
-    return (
-      <div className="min-h-screen w-full text-white p-6">
-        <h1 className="text-2xl font-bold">404 - Category Not Found</h1>
-      </div>
-    );
-  }
+//   if (!category) {
+//     return (
+//       <div className="min-h-screen w-full text-white p-6">
+//         <h1 className="text-2xl font-bold">404 - Category Not Found</h1>
+//       </div>
+//     );
+//   }
 
-  let movies: Movie[] = []; // ✅ explicitly typed
+//   let movies: Movie[] = []; // ✅ explicitly typed
 
-  try {
-    movies = await prisma.movie.findMany({
-      where: { category },
-      orderBy: { createdat: "desc" },
-    });
-  } catch (error) {
-    console.error("Error fetching movies:", error);
-  }
+//   try {
+//     movies = await prisma.movie.findMany({
+//       where: { category },
+//       orderBy: { createdat: "desc" },
+//     });
+//   } catch (error) {
+//     console.error("Error fetching movies:", error);
+//   }
 
-  return (
-    <div className="min-h-screen w-full pt-10 text-white p-6">
-      <h1 className="text-2xl font-bold mb-6">
-        {slug.replace("-", " ").toUpperCase()}
-      </h1>
+//   return (
+//     <div className="min-h-screen w-full pt-10 text-white p-6">
+//       <h1 className="text-2xl font-bold mb-6">
+//         {slug.replace("-", " ").toUpperCase()}
+//       </h1>
 
-      <CategoryRow category={slug} movies={movies} />
-    </div>
-  );
-}
+//       <CategoryRow category={slug} movies={movies} />
+//     </div>
+//   );
+// }
