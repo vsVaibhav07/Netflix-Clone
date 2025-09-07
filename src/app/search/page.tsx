@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <h1 className="text-2xl font-bold mb-6">
-        Search results for "{query}"
+        Search results for  &quot;{query}&quot;
       </h1>
 
       {results.length > 0 ? (

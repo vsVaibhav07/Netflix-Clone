@@ -4,6 +4,7 @@ import { Bell, Search, LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import MobileMenu from "./mobile-menu";
+import Image from "next/image";
 
 const Navbar: React.FC = () => {
   const [showSearch, setShowSearch] = useState(false);
@@ -20,7 +21,8 @@ const Navbar: React.FC = () => {
     <div>
       <header className="flex items-center justify-between bg-gray-950 text-white px-4 py-2">
         <Link href="/">
-          <img className="w-24 bg-transparent" src="/logo.png" alt="Logo" />
+          <Image className="w-24 bg-transparent" src="/logo.png"  fill
+  priority alt="Logo" />
         </Link>
         <div className="md:hidden">
           <MobileMenu />

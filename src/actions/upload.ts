@@ -29,7 +29,7 @@ export const uploadVideoAction = async (
   prevState: UploadVideoFormState,
   formData: FormData
 ): Promise<UploadVideoFormState> => {
-  const rawData: any = Object.fromEntries(formData.entries());
+  const rawData: Record<string, unknown> = Object.fromEntries(formData.entries());
 
   if (rawData.genres && typeof rawData.genres === "string") {
     rawData.genres = rawData.genres.split(",");
@@ -46,15 +46,15 @@ export const uploadVideoAction = async (
 
     await prisma.movie.create({
       data: {
-        moviename: movieName,        // ✅ DB field
-        description,                 // ✅ same name
-        category,                    // ✅ same name
-        genres,                      // ✅ text[]
-        videourl: videoUrl,          // ✅ DB field
-        thumbnailurl: thumbnailUrl,  // ✅ DB field
+        moviename: movieName,
+        description,
+        category,
+        genres,
+        videourl: videoUrl,
+        thumbnailurl: thumbnailUrl,
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       errors: {
         formErrors: [error instanceof Error ? error.message : String(error)],

@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Pause, Play } from "lucide-react";
 import type { Movie } from "@/generated/prisma";
+import Image from "next/image";
 
 const MovieDialog = ({ movie }: { movie: Movie }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,9 +30,15 @@ const MovieDialog = ({ movie }: { movie: Movie }) => {
         className="w-80 h-48 overflow-hidden m-4 cursor-pointer group relative rounded-xl"
         onClick={() => setIsOpen(true)}
       >
-        <img
+        <Image
+     
+
+ 
           src={movie.thumbnailurl || movie.videourl}
           alt={movie.moviename}
+           width={120}
+  height={40}
+  priority
           className="w-[90%] h-64 object-cover overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition" />
