@@ -20,8 +20,8 @@ const Navbar: React.FC = () => {
   return (
     <div>
       <header className="flex items-center justify-between bg-gray-950 text-white px-4 py-2">
-        <Link href="/">
-          <Image className="w-24 bg-transparent" src="/logo.png"  fill
+        <Link className="w-24" href="/">
+          <Image width={400} height={60} className="w-24 bg-transparent" src="/logo.png"  
   priority alt="Logo" />
         </Link>
         <div className="md:hidden">
