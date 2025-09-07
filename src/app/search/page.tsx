@@ -12,7 +12,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const results = await prisma.movie.findMany({
     where: {
       OR: [
-        { title: { contains: query, mode: "insensitive" } },
+        { moviename: { contains: query, mode: "insensitive" } },
         { description: { contains: query, mode: "insensitive" } },
       ],
     },
@@ -26,7 +26,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </h1>
 
       {results.length > 0 ? (
-        <MovieRow category="Results" movies={results} />
+        <MovieRow genre="Results" movies={results} />
       ) : (
         <p>No results found.</p>
       )}

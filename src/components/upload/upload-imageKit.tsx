@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { IKContext, IKUpload } from "imagekitio-react";
 import { Progress } from "../ui/progress";
 
-const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!;
-const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT!;
+const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY as string;
+const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT as string;
 
 const authenticator = async () => {
   const response = await fetch("/api/upload-auth");
@@ -32,8 +32,12 @@ export default function Upload({ setVideoUrl, setThumbnailUrl }: IkUploadProps) 
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const onError = (err: any) => {
-    setError(err.message);
+  const onError = (err: unknown) => {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Upload failed");
+    }
     setUploadProgress(null);
   };
 
@@ -52,11 +56,11 @@ export default function Upload({ setVideoUrl, setThumbnailUrl }: IkUploadProps) 
     >
       <IKUpload
         useUniqueFileName
-        validateFile={(file) => file.size < 20 * 1024 * 1024}
+        validateFile={(file: File) => file.size < 20 * 1024 * 1024}
         folder="/netflix-uploads"
         onError={onError}
         onSuccess={onSuccess}
-        onUploadProgress={(evt) => {
+        onUploadProgress={(evt: ProgressEvent) => {
           if (evt.lengthComputable) {
             const progress = Math.round((evt.loaded / evt.total) * 100);
             setUploadProgress(progress);
