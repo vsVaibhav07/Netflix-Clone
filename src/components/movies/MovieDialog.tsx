@@ -1,5 +1,6 @@
 "use client";
-import React, { useRef, useState } from "react";
+
+import React, { useRef, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Pause, Play } from "lucide-react";
@@ -11,7 +12,7 @@ const MovieDialog = ({ movie }: { movie: Movie }) => {
   const [isPaused, setIsPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const handlePlay = () => {
+  const handlePlayToggle = () => {
     if (!videoRef.current) return;
     if (isPaused) {
       videoRef.current.play();
@@ -22,69 +23,119 @@ const MovieDialog = ({ movie }: { movie: Movie }) => {
     }
   };
 
+  // ✅ Auto-pause video when dialog closes
+ useEffect(() => {
+  if (isOpen && videoRef.current) {
+    const video = videoRef.current;
+
+    // Initial sync when dialog opens
+    setIsPaused(video.paused);
+
+    // Event listeners for play/pause
+    const handlePlay = () => setIsPaused(false);
+    const handlePause = () => setIsPaused(true);
+
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+
+    return () => {
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+    };
+  }
+}, [isOpen]);
+
   if (!movie) return null;
 
   return (
     <>
-      <div
-        className="w-80 h-48 overflow-hidden m-4 cursor-pointer group relative rounded-xl"
-        onClick={() => setIsOpen(true)}
-      >
-        <Image
-     
+  {/* Thumbnail Card */}
+  <div
+    onClick={() => setIsOpen(true)}
+    className="relative object-cover aspect-[16/9] cursor-pointer group rounded-md sm:rounded-lg md:rounded-xl overflow-hidden shadow-md hover:shadow-lg transition"
+  >
+    <Image
+      src={movie.thumbnailurl || movie.videourl}
+      alt={movie.moviename}
+      fill
+      priority
+      className="object-cover bg-black md:group-hover:scale-105 transition-transform duration-300"
+    />
+    <div className="absolute inset-0 bg-black/50 opacity-0 md:group-hover:opacity-100 transition" />
+  </div>
 
- 
-          src={movie.thumbnailurl || movie.videourl}
-          alt={movie.moviename}
-           width={120}
-  height={40}
-  priority
-          className="w-[90%] h-64 object-cover overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition" />
-      </div>
+  {/* Dialog Modal */}
+  <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <DialogContent
+      className="
+        w-auto
+        max-w-full
+        md:max-w-4xl
+        lg:max-w-6xl
+        xl:max-w-[90%]
+        max-h-screen
+        bg-black text-white
+        border-none
+        p-0
+        overflow-hidden
+        rounded-xl
+      "
+    >
+      <div className="flex flex-col gap-2 p-4 sm:p-6 lg:p-6 w-full h-auto">
+        {/* Title */}
+        <DialogHeader>
+          <DialogTitle className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-bold">
+            {movie.moviename}
+          </DialogTitle>
+        </DialogHeader>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl bg-black text-white border-none p-0 overflow-hidden">
-          <div className="p-6 space-y-4">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">
-                {movie.moviename}
-              </DialogTitle>
-            </DialogHeader>
+        {/* Video Preview */}
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+          <video
+            ref={videoRef}
+            autoPlay
+            controls
+            src={movie.videourl}
+            className="w-full h-full object-cover bg-black"
+          />
+        </div>
 
-            <video
-              ref={videoRef}
-              autoPlay
-              src={movie.videourl}
-              className="w-full mt-4 rounded-lg"
-            />
+        {/* Controls */}
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={handlePlayToggle}
+            className="bg-white text-black font-bold px-4 sm:px-6 py-2 hover:bg-gray-200 flex items-center gap-2"
+          >
+            {isPaused ? <Play size={18} /> : <Pause size={18} />}
+            {isPaused ? "Play" : "Pause"}
+          </Button>
+        </div>
 
-            <div className="flex gap-3">
-              <Button
-                onClick={handlePlay}
-                className="bg-white text-black font-bold px-6 hover:bg-gray-200 flex items-center gap-2"
+        {/* Description */}
+        {movie.description && (
+          <p className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed">
+            {movie.description}
+          </p>
+        )}
+
+        {/* Genres */}
+        {movie.genres?.length > 0 && (
+          <div className="flex flex-wrap gap-2 text-xs sm:text-sm lg:text-base">
+            {movie.genres.map((g, i) => (
+              <span
+                key={i}
+                className="bg-gray-800/70 px-2 sm:px-3 py-1 rounded-full text-gray-300"
               >
-                {isPaused ? <Play /> : <Pause />}
-                {isPaused ? "Play" : "Pause"}
-              </Button>
-            </div>
-
-            <p className="text-gray-300 text-sm">{movie.description}</p>
-
-            {movie.genres && (
-              <div className="flex flex-wrap gap-2 text-sm text-gray-400">
-                {movie.genres.map((g, i) => (
-                  <span key={i} className="bg-gray-800 px-2 py-1 rounded">
-                    {g}
-                  </span>
-                ))}
-              </div>
-            )}
+                {g}
+              </span>
+            ))}
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        )}
+      </div>
+    </DialogContent>
+  </Dialog>
+</>
+
   );
 };
 

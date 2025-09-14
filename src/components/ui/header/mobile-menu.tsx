@@ -15,9 +15,9 @@ const MobileMenu = () => {
       {showMenu && (
         <div className="flex flex-col gap-1 z-40 absolute bg-gray-950 top-12 p-4 left-0 w-full border-b border-gray-700 text-sm font-mono">
           <Link href="/">Home</Link>
-          <Link href="/movies">Movies</Link>
-          <Link href="/tv-shows">Tv-Shows</Link>
-          <Link href="/latest">Latest</Link>
+          <Link href="/category/movies">Movies</Link>
+          <Link href="/category/tv-shows">Tv-Shows</Link>
+          <Link href="/category/web-series">Web Series</Link>
         </div>
       )}
     </div>

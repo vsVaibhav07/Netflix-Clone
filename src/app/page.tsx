@@ -31,9 +31,7 @@ export default async function Home() {
 
   return (
     <div className="w-full relative flex flex-col bg-black text-white">
-      <div className="fixed bg-gray-950 top-0 w-full z-50">
-        <Navbar />
-      </div>
+      
       <section className="pt-12">
         {movies && <MovieBanner movies={movies} />}
       </section>
