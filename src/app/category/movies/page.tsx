@@ -1,13 +1,9 @@
-
 import ContentRow from "@/components/movies/ContentRow";
-import MovieBanner from "@/components/movies/movie-banner";
 import { prisma } from "@/lib/prisma";
 
-
-export default async function Home() {
-  
+export default async function MoviesPage() {
   const allContent = await prisma.content.findMany({
-    include: { episodes: true }, 
+    where: { category: "Movie" }, 
     orderBy: { createdAt: "desc" },
   });
 
@@ -37,14 +33,10 @@ export default async function Home() {
   }
 
 
-  const bannerContent = allContent.filter((item) => item.videoUrl);
+
 
   return (
     <div className="relative w-full bg-black text-white">
-    
-      <section className="top-0 bg-white p-0 m-0">
-        <MovieBanner content={bannerContent} />
-      </section>
 
       
       <main className="relative z-20 flex flex-col items-center justify-center bg-gray-950 px-6 py-16 text-center">

@@ -1,6 +1,6 @@
 // // import { currentUser } from "@clerk/nextjs/server";
 // // import { prisma } from "@/lib/prisma";
-// // import MovieRow from "@/components/movies/MovieRow";
+// // import MovieRow from "@/components/content/MovieRow";
 
 // interface CategoryPageProps {
 //   params: { slug: string };
@@ -24,7 +24,7 @@
 //     return (
 //       <div className="min-h-screen bg-black text-white p-6">
 //         <h1 className="text-2xl font-bold mb-6">My List</h1>
-//         <MovieRow category="My List" movies={myList.map((m) => m.movie)} />
+//         <MovieRow category="My List" content={myList.map((m) => m.movie)} />
 //       </div>
 //     );
 //   }

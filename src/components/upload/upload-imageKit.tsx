@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import { IKContext, IKUpload } from "imagekitio-react";
+import { useState } from "react";
 import { Progress } from "../ui/progress";
 
 const publicKey = process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY as string;
@@ -16,7 +16,7 @@ type IkUploadResponse = {
   fileId: string;
   name: string;
   url: string;
-  thumbnailUrl?: string;
+  thumbnailurl?: string;
   filePath: string;
   height?: number;
   width?: number;
@@ -24,11 +24,11 @@ type IkUploadResponse = {
 };
 
 type IkUploadProps = {
-  setVideoUrl?: (url: string) => void;
-  setThumbnailUrl?: (url: string) => void;
+  setvideoUrl?: (url: string) => void;
+  setthumbnailurl?: (url: string) => void;
 };
 
-export default function Upload({ setVideoUrl, setThumbnailUrl }: IkUploadProps) {
+export default function Upload({ setvideoUrl, setthumbnailurl }: IkUploadProps) {
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,11 +42,11 @@ export default function Upload({ setVideoUrl, setThumbnailUrl }: IkUploadProps) 
   };
 
   const onSuccess = (res: IkUploadResponse) => {
-    if (setVideoUrl && res.url) setVideoUrl(res.url);
-    if (setThumbnailUrl && res.thumbnailUrl) setThumbnailUrl(res.thumbnailUrl);
-    setUploadProgress(100);
-    setError(null);
-  };
+  if (setvideoUrl && res.url) setvideoUrl(res.url);
+  if (setthumbnailurl && res.url) setthumbnailurl(res.url); // ✅ fix
+  setUploadProgress(100);
+  setError(null);
+};
 
   return (
     <IKContext

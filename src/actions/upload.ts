@@ -1,26 +1,27 @@
 "use server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const UploadVideoSchema = z.object({
-  movieName: z.string().min(1, "Movie Name is required!"),
+  title: z.string().min(1, "Movie Name is required!"),
   description: z.string().min(1, "Description is required!"),
   category: z.string().min(1, "Category is required!"),
   genres: z.array(z.string()).optional(),
-  videoUrl: z.string().url("Invalid Video Url!"),
-  thumbnailUrl: z.string().optional(),
+  videoUrl: z.string().url("Invalid Video Url!").optional(),
+  thumbnailurl: z.string().optional(),
 });
 
 type UploadVideoFormState = {
   errors?: {
-    movieName?: string[];
+    title?: string[];
     description?: string[];
     category?: string[];
     genres?: string[];
     videoUrl?: string[];
-    thumbnailUrl?: string[];
+    thumbnailurl?: string[];
     formErrors?: string[];
   };
 };
@@ -29,6 +30,12 @@ export const uploadVideoAction = async (
   prevState: UploadVideoFormState,
   formData: FormData
 ): Promise<UploadVideoFormState> => {
+
+ const { userId } = await auth() as { userId: string | null };
+  if (!userId) {
+    return { errors: { formErrors: ["User not logged in"] } };
+  }
+
   const rawData: Record<string, unknown> = Object.fromEntries(formData.entries());
 
   if (rawData.genres && typeof rawData.genres === "string") {
@@ -42,16 +49,17 @@ export const uploadVideoAction = async (
   }
 
   try {
-    const { movieName, description, category, genres, videoUrl, thumbnailUrl } = result.data;
+    const { title, description, category, genres, videoUrl, thumbnailurl } = result.data;
 
-    await prisma.movie.create({
+    await prisma.content.create({
       data: {
-        moviename: movieName,
+        title: title,
         description,
         category,
         genres,
-        videourl: videoUrl,
-        thumbnailurl: thumbnailUrl,
+         videoUrl: category === "Movie" ? videoUrl : null,
+        thumbnailurl: thumbnailurl,
+        uploaderId:userId
       },
     });
   } catch (error: unknown) {

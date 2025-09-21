@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { Button } from "../button";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { SignOutButton } from "@clerk/nextjs";
 
 const MobileMenu = () => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
   return (
-    <div className="md:hidden">
+    <div className="md:hidden ">
       <Button onClick={() => setShowMenu((prev) => !prev)}>
-        <span>Browse</span>
         <ChevronDown className={`transition ${showMenu ? "rotate-180" : ""}`} />
       </Button>
       {showMenu && (
@@ -18,6 +18,10 @@ const MobileMenu = () => {
           <Link href="/category/movies">Movies</Link>
           <Link href="/category/tv-shows">Tv-Shows</Link>
           <Link href="/category/web-series">Web Series</Link>
+          <Link href="/dashboard">Dashboard</Link>
+          <SignOutButton>
+            Sign out
+          </SignOutButton>
         </div>
       )}
     </div>

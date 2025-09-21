@@ -1,14 +1,14 @@
 # 🎬 Netflix Clone
 
 A full-stack Netflix-like streaming platform built with **Next.js 14, Prisma ORM, Neon PostgreSQL, TailwindCSS, and ImageKit**.  
-Users can upload movies, categorize them by genres, and stream videos in a modern Netflix-style UI.
+Users can upload content, categorize them by genres, and stream videos in a modern Netflix-style UI.
 
 ---
 
 ## 🚀 Features
 - 📺 Dynamic Movie Banner & Rows
 - 🎭 Genre-based categorization (Action, Comedy, Thriller, Drama, etc.)
-- 🎬 Upload Movies with Video & Thumbnail (ImageKit Integration)
+- 🎬 Upload content with Video & Thumbnail (ImageKit Integration)
 - ⚡ Server Actions with Prisma ORM
 - 🗄️ Neon PostgreSQL Database
 - 🎨 Responsive UI with TailwindCSS + ShadCN

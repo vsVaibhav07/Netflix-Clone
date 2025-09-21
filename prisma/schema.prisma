@@ -8,17 +8,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Movie {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  moviename    String
-  description  String
-  category     String
-  genres       String[]
-  videourl     String
-  thumbnailurl String?
-  createdat    DateTime? @default(now()) @db.Timestamp(6)
-  updatedat    DateTime? @default(now()) @db.Timestamp(6)
+model User {
+  id        String     @id                  
+  email     String     @unique
+  role      String     @default("user")
 
-  @@index([moviename, category], map: "idx_movies_name_category")
-  @@map("movies")
+  contents  Content[]  @relation("UserUploads")  
+  wishlist  Content[]  @relation("UserWishlist")  
+}
+
+model Content {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  description  String
+  category     String  
+  genres       String[]
+  thumbnailurl String?
+  createdAt    DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @db.Timestamp(6)
+
+  uploaderId   String
+  uploader     User      @relation("UserUploads", fields: [uploaderId], references: [id])
+
+  wishedBy     User[]    @relation("UserWishlist")
+
+
+  videoUrl     String?
+
+  episodes     Episode[]
+
+  @@index([title, category], map: "idx_content_title_category")
+  @@map("content")
+}
+
+model Episode {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  description  String
+  videoUrl     String
+  thumbnailurl String?
+  seasonNumber Int
+  episodeNumber Int
+
+  
+  contentId    String    @db.Uuid
+  content      Content   @relation(fields: [contentId], references: [id])
+
+  @@index([contentId])
+  @@map("episodes")
 }

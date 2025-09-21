@@ -1,16 +1,58 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Button } from "../ui/button";
+import type { Content, Episode } from "@/generated/prisma";
 import { Pause, Play } from "lucide-react";
-import type { Movie } from "@/generated/prisma";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
-const MovieDialog = ({ movie }: { movie: Movie }) => {
+type ContentDialogProps =
+  | { content: Content & { episodes?: Episode[] | null } }
+  | { content: Episode };
+
+const MovieDialog = ({ content }: ContentDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // check type
+  const isContent = "category" in content;
+  const isMovie = isContent && content.category === "Movie";
+  const isSeries = isContent && content.category === "Web Series";
+
+  // video URL
+  const videoUrl = isContent
+    ? isMovie
+      ? content.videoUrl
+      : content.episodes?.[currentEpisodeIndex]?.videoUrl
+    : content.videoUrl;
+
+  // sync play/pause
+  useEffect(() => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+
+    if (isOpen) {
+      setIsPaused(video.paused);
+
+      const handlePlay = () => setIsPaused(false);
+      const handlePause = () => setIsPaused(true);
+
+      video.addEventListener("play", handlePlay);
+      video.addEventListener("pause", handlePause);
+
+      return () => {
+        video.removeEventListener("play", handlePlay);
+        video.removeEventListener("pause", handlePause);
+        video.pause();
+      };
+    } else {
+      video.pause();
+      setIsPaused(true);
+    }
+  }, [isOpen, currentEpisodeIndex]);
 
   const handlePlayToggle = () => {
     if (!videoRef.current) return;
@@ -23,119 +65,137 @@ const MovieDialog = ({ movie }: { movie: Movie }) => {
     }
   };
 
-  // ✅ Auto-pause video when dialog closes
- useEffect(() => {
-  if (isOpen && videoRef.current) {
-    const video = videoRef.current;
-
-    // Initial sync when dialog opens
-    setIsPaused(video.paused);
-
-    // Event listeners for play/pause
-    const handlePlay = () => setIsPaused(false);
-    const handlePause = () => setIsPaused(true);
-
-    video.addEventListener("play", handlePlay);
-    video.addEventListener("pause", handlePause);
-
-    return () => {
-      video.removeEventListener("play", handlePlay);
-      video.removeEventListener("pause", handlePause);
-    };
-  }
-}, [isOpen]);
-
-  if (!movie) return null;
-
   return (
     <>
-  {/* Thumbnail Card */}
-  <div
-    onClick={() => setIsOpen(true)}
-    className="relative object-cover aspect-[16/9] cursor-pointer group rounded-md sm:rounded-lg md:rounded-xl overflow-hidden shadow-md hover:shadow-lg transition"
-  >
-    <Image
-      src={movie.thumbnailurl || movie.videourl}
-      alt={movie.moviename}
-      fill
-      priority
-      className="object-cover bg-black md:group-hover:scale-105 transition-transform duration-300"
-    />
-    <div className="absolute inset-0 bg-black/50 opacity-0 md:group-hover:opacity-100 transition" />
-  </div>
-
-  {/* Dialog Modal */}
-  <Dialog open={isOpen} onOpenChange={setIsOpen}>
-    <DialogContent
-      className="
-        w-auto
-        max-w-full
-        md:max-w-4xl
-        lg:max-w-6xl
-        xl:max-w-[90%]
-        max-h-screen
-        bg-black text-white
-        border-none
-        p-0
-        overflow-hidden
-        rounded-xl
-      "
-    >
-      <div className="flex flex-col gap-2 p-4 sm:p-6 lg:p-6 w-full h-auto">
-        {/* Title */}
-        <DialogHeader>
-          <DialogTitle className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-bold">
-            {movie.moviename}
-          </DialogTitle>
-        </DialogHeader>
-
-        {/* Video Preview */}
-        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-          <video
-            ref={videoRef}
-            autoPlay
-            controls
-            src={movie.videourl}
-            className="w-full h-full object-cover bg-black"
-          />
+      {/* Thumbnail */}
+      <div
+        onClick={() => setIsOpen(true)}
+        className="relative max-w-60 sm:max-w-full h-48 cursor-pointer overflow-hidden rounded-lg shadow-md transition hover:scale-[1.02] flex hover:shadow-xl group"
+      >
+        <Image
+          src={content?.thumbnailurl || "/thumbnail.webp"}
+          alt={content.title}
+          fill
+          priority
+          className="object-cover h-full flex-1 aspect-[16/9] transition-transform duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/50 opacity-0 transition group-hover:opacity-100 flex flex-col justify-end p-3">
+          <h2 className="text-base sm:text-lg font-semibold text-white line-clamp-1">
+            {content.title}
+          </h2>
+          {"description" in content && (
+            <p className="text-xs sm:text-sm text-gray-300 line-clamp-2">
+              {content.description}
+            </p>
+          )}
         </div>
-
-        {/* Controls */}
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={handlePlayToggle}
-            className="bg-white text-black font-bold px-4 sm:px-6 py-2 hover:bg-gray-200 flex items-center gap-2"
-          >
-            {isPaused ? <Play size={18} /> : <Pause size={18} />}
-            {isPaused ? "Play" : "Pause"}
-          </Button>
-        </div>
-
-        {/* Description */}
-        {movie.description && (
-          <p className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed">
-            {movie.description}
-          </p>
-        )}
-
-        {/* Genres */}
-        {movie.genres?.length > 0 && (
-          <div className="flex flex-wrap gap-2 text-xs sm:text-sm lg:text-base">
-            {movie.genres.map((g, i) => (
-              <span
-                key={i}
-                className="bg-gray-800/70 px-2 sm:px-3 py-1 rounded-full text-gray-300"
-              >
-                {g}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
-    </DialogContent>
-  </Dialog>
-</>
 
+      {/* Dialog Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent
+          className="
+            w-full max-w-6xl max-h-screen 
+            bg-black text-white 
+            border-none p-0 overflow-y-auto 
+            rounded-xl shadow-2xl
+          "
+        >
+          <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
+            {/* Header */}
+            <DialogHeader>
+              <DialogTitle className="text-lg sm:text-2xl lg:text-3xl font-bold">
+                {isSeries && isContent
+                  ? content.episodes?.[currentEpisodeIndex]?.title || content.title
+                  : content.title}
+              </DialogTitle>
+            </DialogHeader>
+
+            {/* Video */}
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
+              {videoUrl ? (
+                <video
+                  ref={videoRef}
+                  key={videoUrl}
+                  autoPlay
+                  controls
+                  src={videoUrl}
+                  className="h-full w-full bg-black object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-800 text-lg">
+                  Video not available.
+                </div>
+              )}
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handlePlayToggle}
+                className="flex items-center gap-2 rounded-lg bg-white px-5 py-2 font-semibold text-black hover:bg-gray-200"
+              >
+                {isPaused ? <Play size={18} /> : <Pause size={18} />}
+                {isPaused ? "Play" : "Pause"}
+              </Button>
+            </div>
+
+            {/* Details Section */}
+            {isContent && (
+              <div className="flex flex-col gap-4">
+                <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-gray-300">
+                  {isSeries
+                    ? content.episodes?.[currentEpisodeIndex]?.description ||
+                      content.description
+                    : content.description}
+                </p>
+
+                {/* Episodes */}
+                {isSeries && content.episodes && content.episodes.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 font-semibold text-white">Episodes</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {content.episodes
+                        .sort((a, b) => a.episodeNumber - b.episodeNumber)
+                        .map((episode, index) => (
+                          <Button
+                            key={episode.id}
+                            onClick={() => setCurrentEpisodeIndex(index)}
+                            className={`rounded-full px-3 py-1 text-xs sm:text-sm lg:text-base transition ${
+                              index === currentEpisodeIndex
+                                ? "bg-purple-600 text-white"
+                                : "bg-gray-800/70 text-gray-300 hover:bg-gray-700"
+                            }`}
+                          >
+                            S{episode.seasonNumber}E{episode.episodeNumber}
+                          </Button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Genres */}
+                {content.genres?.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 font-semibold text-white">Genres</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {content.genres.map((g, i) => (
+                        <span
+                          key={i}
+                          className="rounded-full bg-gray-800/70 px-3 py-1 text-xs sm:text-sm lg:text-base text-gray-300"
+                        >
+                          {g}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
