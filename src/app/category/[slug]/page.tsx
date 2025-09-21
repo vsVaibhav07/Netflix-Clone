@@ -13,8 +13,10 @@ type CategoryPageProps = {
 
 export default async function CategoryPage({
   params,
-}: CategoryPageProps) {
-  const { slug } = params;
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
   const categoryMap: Record<string, string> = {
     "tv-shows": "TV-Serial",
