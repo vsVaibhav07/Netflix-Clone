@@ -6,13 +6,14 @@ type ContentWithEpisodes = Content & {
   episodes?: Episode[];
 };
 
-type  CategoryPageProps = {
+type CategoryPageProps = {
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+}: CategoryPageProps) {
   const { slug } = params;
 
   const categoryMap: Record<string, string> = {
@@ -42,8 +43,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         },
       },
     });
-  } catch (error) {
-    console.error("Error fetching content:", error);
+  } catch {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-gray-950 p-6 text-white">
         <h1 className="text-2xl font-bold">
@@ -68,7 +68,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     return { genre, content };
   });
 
-  if (!allContent || allContent.length === 0) {
+  if (!allContent.length) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gray-800 text-6xl text-white">
         No Series Found
@@ -84,8 +84,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
       <section className="mt-12 flex w-full flex-col gap-8 px-8 text-left">
         {contentByGenre.map(({ genre, content }) => {
-          if (content.length === 0) return null;
-
+          if (!content.length) return null;
           return (
             <div key={genre}>
               <h2 className="text-2xl text-white">{genre}</h2>

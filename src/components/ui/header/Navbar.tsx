@@ -7,7 +7,7 @@ import UserProfile from "./UserProfile";
 import { useUser } from "@clerk/nextjs";
 
 const Navbar: React.FC = () => {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
 
   if (!isLoaded || !isSignedIn) return null;
 
