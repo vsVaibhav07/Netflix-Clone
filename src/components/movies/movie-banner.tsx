@@ -9,7 +9,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Content } from "@/generated/prisma";
 
-// Use a direct Prisma type for better type safety
+
 type MovieBannerProps = {
   content: Content[];
 };
@@ -28,10 +28,10 @@ const MovieBanner: FC<MovieBannerProps> = ({ content }) => {
     }
   }, [play, activeIndex]);
 
-  // Filter content to only include items that have a videoUrl and are not null.
+
   const movies = content.filter((item) => item?.videoUrl);
 
-  // If there are no movies to display, don't render the banner.
+
   if (movies.length === 0) {
     return null;
   }
@@ -54,7 +54,7 @@ const MovieBanner: FC<MovieBannerProps> = ({ content }) => {
                   ref={videoRef}
                   urlEndpoint={process.env.NEXT_PUBLIC_URL_ENDPOINT}
                   src={movie.videoUrl}
-                  // autoPlay={play}
+                  autoPlay={play}
                   muted
                   loop
                   playsInline

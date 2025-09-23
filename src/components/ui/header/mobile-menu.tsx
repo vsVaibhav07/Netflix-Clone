@@ -19,7 +19,9 @@ const MobileMenu = () => {
           <Link href="/category/tv-shows">Tv-Shows</Link>
           <Link href="/category/web-series">Web Series</Link>
           <Link href="/dashboard">Dashboard</Link>
-          <SignOutButton>
+          <Link href="/profile/favourites">Wish-List</Link>
+          <hr className="border-gray-700 my-2" />
+          <SignOutButton  className="bg-red-500 w-fit cursor-pointer text-center text-xs px-4 py-2 rounded hover:bg-red-600 transition">
             Sign out
           </SignOutButton>
         </div>

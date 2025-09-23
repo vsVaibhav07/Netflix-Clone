@@ -28,6 +28,7 @@ const Navbar: React.FC = () => {
           <Link href="/category/movies">Movies</Link>
           <Link href="/category/tv-shows">TV Shows</Link>
           <Link href="/category/web-series">Web-Series</Link>
+          <Link href="/profile/favourites">Wish-List</Link>
         </nav>
         <div className="md:hidden">
           <MobileMenu />
