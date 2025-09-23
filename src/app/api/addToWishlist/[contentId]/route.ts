@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   _req: Request,
-  context: { params: { contentId: string } } // ✅ only params allowed here
+  context: { params: Promise<{ contentId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -13,7 +13,7 @@ export async function POST(
       return new Response("Please log in first!", { status: 401 });
     }
 
-    const { contentId } = context.params;
+    const { contentId } =await context.params;
 
     const alreadyInWishlist = await prisma.user.findFirst({
       where: {
