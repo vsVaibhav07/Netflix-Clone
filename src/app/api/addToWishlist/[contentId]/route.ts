@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma"; 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(
   _req: Request,
-  { params }: { params: { contentId: string } }
+  { params }: { params: { contentId: string }; searchParams?: Record<string, string | string[]> }
 ) {
   try {
     const { userId } = await auth(); 
@@ -14,7 +14,6 @@ export async function POST(
     }
 
     const { contentId } = params;
-
 
     const alreadyInWishlist = await prisma.user.findFirst({
       where: {
@@ -25,7 +24,6 @@ export async function POST(
       },
     });
 
-    
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -36,9 +34,7 @@ export async function POST(
       include: { wishlist: true },
     });
 
-    
     revalidatePath("/profile/favourites");
-    
 
     return NextResponse.json({
       wishlist: updatedUser.wishlist,
