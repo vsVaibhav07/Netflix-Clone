@@ -21,8 +21,10 @@ const MobileMenu = () => {
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/profile/favourites">Wish-List</Link>
           <hr className="border-gray-700 my-2" />
-          <SignOutButton  className="bg-red-500 w-fit cursor-pointer text-center text-xs px-4 py-2 rounded hover:bg-red-600 transition">
+          <SignOutButton>
+            <Button variant="destructive" className="bg-red-500 w-fit cursor-pointer text-center text-xs px-4 py-2 rounded hover:bg-red-600 transition">
             Sign out
+           </Button>
           </SignOutButton>
         </div>
       )}
