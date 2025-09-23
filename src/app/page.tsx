@@ -13,6 +13,7 @@ export default async function Home() {
   });
     
   } catch (error) {
+    console.log("Database connection error:", error);
     return <div className="text-2xl h-screen w-screen text-white">
       Unable to Connect
     </div>

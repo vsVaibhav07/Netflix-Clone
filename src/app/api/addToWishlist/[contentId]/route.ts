@@ -1,19 +1,19 @@
-import { prisma } from "@/lib/prisma"; 
+import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(
   _req: Request,
-  { params }: { params: { contentId: string }; searchParams?: Record<string, string | string[]> }
+  context: { params: { contentId: string } } // ✅ only params allowed here
 ) {
   try {
-    const { userId } = await auth(); 
+    const { userId } = await auth();
     if (!userId) {
       return new Response("Please log in first!", { status: 401 });
     }
 
-    const { contentId } = params;
+    const { contentId } = context.params;
 
     const alreadyInWishlist = await prisma.user.findFirst({
       where: {
@@ -28,8 +28,8 @@ export async function POST(
       where: { id: userId },
       data: {
         wishlist: alreadyInWishlist
-          ? { disconnect: { id: contentId } } 
-          : { connect: { id: contentId } }, 
+          ? { disconnect: { id: contentId } }
+          : { connect: { id: contentId } },
       },
       include: { wishlist: true },
     });
@@ -40,8 +40,8 @@ export async function POST(
       wishlist: updatedUser.wishlist,
       status: alreadyInWishlist ? "removed" : "added",
     });
-  } catch (error) {
-    console.error("Error toggling wishlist:", error);
+  } catch (_error) {
+    console.error("Error toggling wishlist:", _error);
     return new Response("Internal error", { status: 500 });
   }
 }
