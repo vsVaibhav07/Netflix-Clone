@@ -1,7 +1,9 @@
-import ContentRow from "@/components/movies/ContentRow";
-import SeriesRow from "@/components/series/SeriesRow";
-import MovieBanner from "@/components/movies/movie-banner";
+
 import { prisma } from "@/lib/prisma";
+import { lazy } from "react";
+import MovieBanner from "@/components/movies/movie-banner";
+const ContentRow = lazy (() => import("@/components/movies/ContentRow"));
+const SeriesRow = lazy(() => import("@/components/series/SeriesRow"));
 
 export default async function Home() {
   let allContent = null;

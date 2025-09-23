@@ -1,8 +1,7 @@
-"use client";
-
+"use client"
+import React, { Suspense } from "react";
 import type { Content, Episode } from "@/generated/prisma";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React from "react";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -26,6 +25,7 @@ const SeriesRow = ({ content, category = "default" }: SeriesRowProps) => {
 
   return (
     <section className="relative w-full py-4">
+      {/* Navigation buttons */}
       <button
         aria-label="Previous"
         className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 transform bg-black/60 p-2 text-white transition hover:bg-black/80 ${prevBtnClass}`}
@@ -65,13 +65,15 @@ const SeriesRow = ({ content, category = "default" }: SeriesRowProps) => {
                   src={item.thumbnailurl || "/thumbnail.webp"}
                   alt={item.title}
                   fill
+                  sizes="absolute"
                   className="object-cover"
                 />
               </div>
 
               <div className="absolute inset-0 flex flex-col justify-end rounded-lg bg-black/80 p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <h2 className="text-sm font-semibold line-clamp-1">
-                  {item.episodes?.[0]?.seasonNumber && item.episodes?.[0]?.episodeNumber
+                  {item.episodes?.[0]?.seasonNumber &&
+                  item.episodes?.[0]?.episodeNumber
                     ? `S${item.episodes[0].seasonNumber} • E${item.episodes[0].episodeNumber}: `
                     : ""}
                   {item.title}
@@ -81,11 +83,13 @@ const SeriesRow = ({ content, category = "default" }: SeriesRowProps) => {
                     {item.description}
                   </p>
                 )}
-                <Link href={`/series/${item.id}`} className="mt-3">
-                  <Button className="w-full cursor-pointer bg-purple-500 hover:bg-purple-600">
-                    Watch
-                  </Button>
-                </Link>
+                <Suspense fallback={<div>Loading Button...</div>}>
+                  <Link href={`/series/${item.id}`} className="mt-3">
+                    <Button className="w-full cursor-pointer bg-purple-500 hover:bg-purple-600">
+                      Watch
+                    </Button>
+                  </Link>
+                </Suspense>
               </div>
             </div>
           </SwiperSlide>

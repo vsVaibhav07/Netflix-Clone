@@ -90,7 +90,7 @@ const MovieDialog = ({ content }: ContentDialogProps) => {
           src={content?.thumbnailurl || "/thumbnail.webp"}
           alt={content.title}
           fill
-          sizes="100vw"
+          sizes="absolute"
           priority
           className="object-cover h-full flex-1 aspect-[16/9] transition-transform duration-300 group-hover:scale-105"
         />
