@@ -1,14 +1,15 @@
 "use client";
 import ContentRow from "@/components/movies/ContentRow";
 import SeriesRow from "@/components/series/SeriesRow";
+import { Content } from "@/generated/prisma";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
   const { isLoaded, isSignedIn } = useUser();
-  const [wishlist, setWishlist] = useState<any[]>([]);
-  const [videos, setVideos] = useState<any[]>([]);
-  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [wishlist, setWishlist] = useState<Content[]>([]);
+  const [videos, setVideos] = useState<Content[]>([]);
+  const [playlists, setPlaylists] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +20,6 @@ const Page = () => {
       return;
     }
 
-    // Fetch wishlist
     fetch("/api/user/wishlist")
       .then((res) => res.json())
       .then((data) => {
@@ -36,7 +36,7 @@ const Page = () => {
     setPlaylists(playlist);
   }, [wishlist]);
 
-  // Show loading while fetching or Clerk is not loaded
+
   if (!isLoaded || loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center text-2xl">

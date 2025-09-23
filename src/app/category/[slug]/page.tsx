@@ -6,10 +6,7 @@ type ContentWithEpisodes = Content & {
   episodes?: Episode[];
 };
 
-type CategoryPageProps = {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
+
 
 export default async function CategoryPage({
   params,

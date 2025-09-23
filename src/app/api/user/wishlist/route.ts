@@ -12,6 +12,6 @@ export async function GET(_req: Request) {
         })
         return NextResponse.json({wishlist:user?.wishlist || []})
     } catch (error) {
-        return NextResponse.json({error:"Failed to fetch wishlist"}, {status:500})
+        return NextResponse.json({"Failed to fetch wishlist":error}, {status:500})
     }
 }
